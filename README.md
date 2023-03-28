@@ -1,3 +1,14 @@
+# I'm looking to complete all of these operations before calling it done.
+
+## Vector Operations
+- [x] Query
+- [x] Update
+- [x] Upsert
+- [x] Delete
+- [x] Fetch
+- [ ] DescribeIndexStats
+
+
 # go-pinecone
 
 [![Go Reference](https://pkg.go.dev/badge/badge/github.com/nekomeowww/go-pinecone.svg)](https://pkg.go.dev/badge/github.com/nekomeowww/go-pinecone)
@@ -98,10 +109,14 @@ func main() {
     ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
     defer cancel()
 
-    index, err := p.Index("YOUR_INDEX_NAME")
+    index, err := p.Index(ctx, "YOUR_INDEX_NAME")
     if err != nil {
         log.Fatal(err)
     }
+
+    // index.Close() should be called after use since
+    // the index client is backed by a gRPC connection.
+    defer index.Close()
 
     // Do something with the index
 }
