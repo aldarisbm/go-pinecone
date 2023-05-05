@@ -60,7 +60,7 @@ type QueryParams struct {
 	SparseVector    *SparseVector  `json:"sparseVector"`
 	Namespace       string         `json:"namespace"`
 	TopK            int            `json:"topK"`
-	Id              string         `json:"id"`
+	ID              string         `json:"id"`
 }
 
 // SparseVector represents a sparse vector.
@@ -71,7 +71,7 @@ type SparseVector struct {
 
 // Vector represents a scored vector.
 type Vector struct {
-	Id           string         `json:"id"`
+	ID           string         `json:"id"`
 	Score        float32        `json:"score,omitempty"`
 	Values       []float32      `json:"values"`
 	SparseValues *SparseVector  `json:"sparseValues,omitempty"`
@@ -118,7 +118,7 @@ func (ic *IndexClient) Query(ctx context.Context, params QueryParams) (*QueryRes
 // DeleteVectorsParams represents the parameters for a delete vectors request.
 // See https://docs.pinecone.io/reference/delete_post for more information.
 type DeleteVectorsParams struct {
-	Ids       []string       `json:"ids"`
+	IDs       []string       `json:"ids"`
 	Namespace string         `json:"namespace"`
 	DeleteAll bool           `json:"deleteAll"`
 	Filter    map[string]any `json:"filter"`
@@ -156,7 +156,7 @@ func (ic *IndexClient) DeleteVectors(ctx context.Context, params DeleteVectorsPa
 
 // FetchVectorsParams represents the parameters for a fetch vectors request.
 type FetchVectorsParams struct {
-	Ids       []string `json:"ids"`
+	IDs       []string `json:"ids"`
 	Namespace string   `json:"namespace"`
 }
 
@@ -179,10 +179,9 @@ func (ic *IndexClient) FetchVectors(ctx context.Context, params FetchVectorsPara
 	resp, err := ic.reqClient.
 		R().
 		SetContentType("application/json").
-		SetPathParams(pathParams).
 		SetSuccessResult(&respBody).
 		SetContext(ctx).
-		Get("/vectors/fetch")
+		Get("/vectors/fetch?" + pathParams)
 
 	if err != nil {
 		return nil, err
@@ -206,7 +205,7 @@ type UpdateVectorParams struct {
 	Values       []float32      `json:"values"`
 	SparseValues *SparseVector  `json:"sparseValues"`
 	SetMetadata  map[string]any `json:"setMetadata"`
-	Id           string         `json:"id"`
+	ID           string         `json:"id"`
 	Namespace    string         `json:"namespace"`
 }
 
