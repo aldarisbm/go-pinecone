@@ -6,6 +6,20 @@ import (
 	"fmt"
 )
 
+// Vector represents a struct with shared fields for vectors
+type Vector struct {
+	ID           string         `json:"id"`
+	Values       []float32      `json:"values"`
+	SparseValues *SparseVector  `json:"sparseValues"`
+	Metadata     map[string]any `json:"metadata"`
+}
+
+// SparseVector represents a sparse vector.
+type SparseVector struct {
+	Indices []int32   `json:"indices"`
+	Values  []float32 `json:"values"`
+}
+
 // DescribeIndexStatsParams represents the parameters for a describe index stats request.
 type DescribeIndexStatsParams struct {
 	Filter map[string]any `json:"filter"`
@@ -24,6 +38,7 @@ type VectorCount struct {
 	VectorCount int64 `json:"vectorCount"`
 }
 
+// DescribeIndexStats returns the index stats for the given index.
 func (ic *IndexClient) DescribeIndexStats(ctx context.Context, params DescribeIndexStatsParams) (*DescribeIndexStatsResponse, error) {
 	var respBody DescribeIndexStatsResponse
 	resp, err := ic.reqClient.
@@ -63,25 +78,16 @@ type QueryParams struct {
 	ID              string         `json:"id"`
 }
 
-// SparseVector represents a sparse vector.
-type SparseVector struct {
-	Indices []int32   `json:"indices"`
-	Values  []float32 `json:"values"`
-}
-
-// Vector represents a scored vector.
-type Vector struct {
-	ID           string         `json:"id"`
-	Score        float32        `json:"score,omitempty"`
-	Values       []float32      `json:"values"`
-	SparseValues *SparseVector  `json:"sparseValues,omitempty"`
-	Metadata     map[string]any `json:"metadata"`
+// QueryVector represents a scored vector.
+type QueryVector struct {
+	Vector
+	Score float32 `json:"score"`
 }
 
 // QueryResponse represents the response from a query request.
 type QueryResponse struct {
-	Matches   []*Vector `json:"matches"`
-	Namespace string    `json:"namespace"`
+	Matches   []*QueryVector `json:"matches"`
+	Namespace string         `json:"namespace"`
 }
 
 // Query performs a query request.
@@ -200,7 +206,6 @@ func (ic *IndexClient) FetchVectors(ctx context.Context, params FetchVectorsPara
 }
 
 // UpdateVectorParams represents the parameters for an update vector request.
-// This has the same fields as the Vector struct plus setMetadata.
 type UpdateVectorParams struct {
 	Values       []float32      `json:"values"`
 	SparseValues *SparseVector  `json:"sparseValues"`
